@@ -252,6 +252,8 @@ const Mutation = new GraphQLObjectType({
           attachmentUrl = result.secure_url;
         }
 
+        console.log(verification);
+
         console.log(attachmentUrl);
 
         return new Promise((resolve, reject) => {
