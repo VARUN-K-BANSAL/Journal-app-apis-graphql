@@ -157,6 +157,7 @@ const RootQuery = new GraphQLObjectType({
                   [user.rows[0].id],
                   (err, tags) => {
                     if (err) throw err;
+                    let results = []; // Array to collect the results
 
                     // Map over the tags and return a promise for each journal
                     const promises = tags.rows.map((tag) => {
@@ -166,16 +167,26 @@ const RootQuery = new GraphQLObjectType({
                           [tag.journalid],
                           (err, journal) => {
                             if (err) return rej(err);
-                            const temp = {
-                              success: true,
-                              message: "fetched successfully",
-                              id: journal.rows[0].id,
-                              description: journal.rows[0].description,
-                              publishedAt: journal.rows[0].publishedat,
-                              attachmentType: journal.rows[0].attachmenttype,
-                              attachmentUrl: journal.rows[0].attachmenturl,
-                            };
-                            res(temp);
+
+                            const currentTime = new Date();
+                            const publishedTime = new Date(
+                              journal.rows[0].publishedat
+                            );
+
+                            // Check if publishedAt time is less than current time
+                            if (publishedTime <= currentTime) {
+                              const temp = {
+                                success: true,
+                                message: "fetched successfully",
+                                id: journal.rows[0].id,
+                                description: journal.rows[0].description,
+                                publishedAt: journal.rows[0].publishedat,
+                                attachmentType: journal.rows[0].attachmenttype,
+                                attachmentUrl: journal.rows[0].attachmenturl,
+                              };
+                              results.push(temp); // Push to the results array
+                            }
+                            res(); // Always resolve the promise
                           }
                         );
                       });
@@ -183,8 +194,8 @@ const RootQuery = new GraphQLObjectType({
 
                     // Wait for all promises to resolve
                     Promise.all(promises)
-                      .then((data) => {
-                        resolve(data);
+                      .then(() => {
+                        resolve(results); // Resolve with the results array
                       })
                       .catch((err) => {
                         reject(err);
@@ -266,9 +277,6 @@ const Mutation = new GraphQLObjectType({
                     .join(", ");
                   let query = `INSERT INTO tags (studentId, journalId) VALUES ${values};`;
 
-                  console.log(id);
-                  console.log(values);
-                  console.log(query);
                   db.query(query, (err, res) => {
                     console.log(err);
                     if (err) {

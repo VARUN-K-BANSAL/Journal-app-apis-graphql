@@ -120,4 +120,10 @@ client.query(`
     console.log("Users data inserted");
 });
 
+client.on('error', (err) => {
+    console.error('Unexpected error on PostgreSQL client:', err);
+    // You can choose to reconnect here or exit the process
+});
+
+
 module.exports = client;
