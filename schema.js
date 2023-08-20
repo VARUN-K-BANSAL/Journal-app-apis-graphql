@@ -26,12 +26,13 @@ const verifyToken = (token) => {
   try {
     // JWT_TOKEN[1] is taken because Bearer token in postman is used
     // In that token is coming as Bearer "token"
-    // console.log(token);
-    // console.log(SECRET_KEY);
+    console.log(token);
+    console.log(SECRET_KEY);
 
     const JWT_TOKEN = token.split(" ");
     return jwt.verify(JWT_TOKEN[1], SECRET_KEY);
   } catch (err) {
+    console.log(err);
     return {
       success: false,
       message: "Token is invalid",
