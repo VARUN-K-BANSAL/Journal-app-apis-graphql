@@ -110,6 +110,7 @@ const RootQuery = new GraphQLObjectType({
                   "SELECT * FROM journals WHERE teacherId = $1",
                   [user.rows[0].id],
                   (err, journals) => {
+                    console.log(journals);
                     if (err) throw err;
 
                     // Map over the journals and return a promise for each journal
@@ -156,6 +157,7 @@ const RootQuery = new GraphQLObjectType({
                   "SELECT * FROM tags WHERE studentId = $1",
                   [user.rows[0].id],
                   (err, tags) => {
+                    console.log(tags);
                     if (err) throw err;
                     let results = []; // Array to collect the results
 
@@ -249,6 +251,8 @@ const Mutation = new GraphQLObjectType({
           attachmentUrl = result.secure_url;
         }
 
+        console.log(attachmentUrl);
+
         return new Promise((resolve, reject) => {
           db.query(
             "SELECT * FROM users WHERE username = $1;",
@@ -276,7 +280,7 @@ const Mutation = new GraphQLObjectType({
                     .map((student, index) => `(${student}, ${id})`)
                     .join(", ");
                   let query = `INSERT INTO tags (studentId, journalId) VALUES ${values};`;
-
+                  console.log(query);
                   db.query(query, (err, res) => {
                     console.log(err);
                     if (err) {
@@ -321,6 +325,8 @@ const Mutation = new GraphQLObjectType({
           return verification;
         }
 
+        console.log(verification);
+
         return new Promise((resolve, reject) => {
           db.query(
             "SELECT * FROM users WHERE username = $1;",
@@ -335,6 +341,7 @@ const Mutation = new GraphQLObjectType({
                 "SELECT * FROM journals WHERE id = $1;",
                 [args.journalId],
                 (err, journal) => {
+                  console.log(journal);
                   if (err) return reject(err);
                   if (journal.rows.length == 0) {
                     return resolve({
@@ -409,6 +416,8 @@ const Mutation = new GraphQLObjectType({
           return verification;
         }
 
+        console.log(verification);
+
         return new Promise((resolve, reject) => {
           db.query(
             "SELECT * FROM users WHERE username = $1",
@@ -424,6 +433,7 @@ const Mutation = new GraphQLObjectType({
                 (err, result) => {
                   if (err) return reject(err);
                   const journal = result.rows[0];
+                  console.log(journal);
 
                   if (!journal) {
                     return resolve({
